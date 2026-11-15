@@ -1,0 +1,9 @@
+{
+  // Static site served by Cloudflare (Workers static assets).
+  // Everything in ./public is the live website.
+  "name": "sn-siding-soffit-website",
+  "compatibility_date": "2026-11-01",
+  "assets": {
+    "directory": "./public"
+  }
+}
