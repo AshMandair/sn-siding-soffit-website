@@ -3645,7 +3645,15 @@ footer p,footer li,footer a{color:#E6D8C3!important;}
         if (done) return; done = true; clearTimeout(timer);
         form.classList.remove('sending'); submitBtn.disabled = false; showFail();
       }
-      viaWeb3Forms().then(sent, function () { return viaEmail().then(sent, failed); });
+      // Copy for SN HQ: goes to the inbox HQ reads, so the lead shows up in HQ automatically.
+      function viaHQ() {
+        var data = collect();
+        data._subject = 'SN Siding lead: ' + value('name') + (value('event-date') ? ' (' + value('event-date') + ')' : ''); data._template = 'table'; data._captcha = 'false';
+        if (value('email')) data._replyto = value('email');
+        return fetch('https://formsubmit.co/ajax/info@nextgenlighting.ca', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }, body: JSON.stringify(data) })
+          .then(function (res) { if (!res.ok) throw new Error('hq ' + res.status); return true; });
+      }
+      Promise.allSettled([viaWeb3Forms().catch(function () { return viaEmail(); }), viaHQ()]).then(function (r) { if (r.some(function (x) { return x.status === 'fulfilled'; })) sent(); else failed(); });
     });
   }
 
